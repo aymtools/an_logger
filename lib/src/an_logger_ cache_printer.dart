@@ -2,7 +2,7 @@ import 'dart:collection';
 
 import 'an_logger.dart';
 
-class CachePrinter extends AnLoggerPrinter {
+class AnLoggerCachePrinter extends AnLoggerPrinter {
   final ListQueue<LogEvent> _buffer;
 
   final int _bufferSize;
@@ -11,7 +11,7 @@ class CachePrinter extends AnLoggerPrinter {
 
   List<LogEvent> get logEvents => logBuffer.toList();
 
-  CachePrinter({int bufferSize = 500})
+  AnLoggerCachePrinter({int bufferSize = 500})
       : this._bufferSize = bufferSize,
         this._buffer = ListQueue(bufferSize);
 
