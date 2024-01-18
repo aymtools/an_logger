@@ -54,29 +54,29 @@ class LogEvent {
   }
 }
 
-abstract class AnLoggerPrinter {
+abstract class LoggerPrinter {
   void printEvent(LogLevel level, String tag, LogEvent event);
 }
 
-class AnLogger {
-  AnLogger._();
+class Logger {
+  Logger._();
 
-  static final AnLogger instance = AnLogger._();
+  static final Logger instance = Logger._();
 
-  static AnLogger get logger => instance;
+  static Logger get logger => instance;
 
-  static AnLogger get log => instance;
+  static Logger get log => instance;
 
-  final Map<Type, AnLoggerPrinter> _printers = {};
+  final Map<Type, LoggerPrinter> _printers = {};
 
   LogLevel _logLevel = LogLevel.ERROR;
 
   set logLevel(LogLevel level) => _logLevel = level;
 
-  void registerPrinter(AnLoggerPrinter printer) =>
+  void registerPrinter(LoggerPrinter printer) =>
       _printers[printer.runtimeType] = printer;
 
-  void unregisterPrinter(AnLoggerPrinter printer) =>
+  void unregisterPrinter(LoggerPrinter printer) =>
       _printers.removeWhere((_, p) => p == printer);
 
   void unregisterPrinterForType<T>() => _printers.remove(T);
