@@ -23,37 +23,25 @@ class Log {
 
   static void v(
           {String? tag, Object? msg, dynamic err, StackTrace? stackTrace}) =>
-      Logger.logger
-          .v(tag: tag, msg: _convertMsg(msg), err: err, stackTrace: stackTrace);
+      Logger.logger.v(tag: tag, msg: msg, err: err, stackTrace: stackTrace);
 
   static void d(
           {String? tag, Object? msg, dynamic err, StackTrace? stackTrace}) =>
-      Logger.logger
-          .d(tag: tag, msg: _convertMsg(msg), err: err, stackTrace: stackTrace);
+      Logger.logger.d(tag: tag, msg: msg, err: err, stackTrace: stackTrace);
 
   static void i(
           {String? tag, Object? msg, dynamic err, StackTrace? stackTrace}) =>
-      Logger.logger
-          .i(tag: tag, msg: _convertMsg(msg), err: err, stackTrace: stackTrace);
+      Logger.logger.i(tag: tag, msg: msg, err: err, stackTrace: stackTrace);
 
   static void w(
           {String? tag, Object? msg, dynamic err, StackTrace? stackTrace}) =>
-      Logger.logger
-          .w(tag: tag, msg: _convertMsg(msg), err: err, stackTrace: stackTrace);
+      Logger.logger.w(tag: tag, msg: msg, err: err, stackTrace: stackTrace);
 
   static void e(
           {String? tag, Object? msg, dynamic err, StackTrace? stackTrace}) =>
-      Logger.logger
-          .e(tag: tag, msg: _convertMsg(msg), err: err, stackTrace: stackTrace);
+      Logger.logger.e(tag: tag, msg: msg, err: err, stackTrace: stackTrace);
 
   static void wtf(
           {String? tag, Object? msg, dynamic err, StackTrace? stackTrace}) =>
-      Logger.logger.wtf(
-          tag: tag, msg: _convertMsg(msg), err: err, stackTrace: stackTrace);
-
-  static String? _convertMsg(Object? msg) {
-    if (msg == null) return null;
-    if (msg is String) return msg;
-    return LoggerConvert.instance.convert(msg);
-  }
+      Logger.logger.wtf(tag: tag, msg: msg, err: err, stackTrace: stackTrace);
 }

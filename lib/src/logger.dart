@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'logger_convert.dart';
+
 enum LogLevel {
   VERBOSE,
   DEBUG,
@@ -27,10 +29,17 @@ class LogEvent {
   final StackTrace? stackTrace;
   final DateTime time;
   final Zone zone;
+  final Object? source;
 
-  LogEvent(this.level, this.tag,
-      {this.msg, this.err, this.stackTrace, Zone? zone})
-      : this.zone = zone ?? Zone.current,
+  LogEvent(
+    this.level,
+    this.tag, {
+    this.msg,
+    this.err,
+    this.stackTrace,
+    Zone? zone,
+    this.source,
+  })  : this.zone = zone ?? Zone.current,
         this.time = DateTime.now();
 
   bool get isNotEmptyMessage =>
@@ -81,41 +90,48 @@ class Logger {
 
   void unregisterPrinterForType<T>() => _printers.remove(T);
 
-  void v({String? tag, String? msg, dynamic err, StackTrace? stackTrace}) =>
+  void v({String? tag, Object? msg, dynamic err, StackTrace? stackTrace}) =>
       _checkLevelAndPrint(LogLevel.VERBOSE,
           tag: tag, msg: msg, err: err, stackTrace: stackTrace);
 
-  void d({String? tag, String? msg, dynamic err, StackTrace? stackTrace}) =>
+  void d({String? tag, Object? msg, dynamic err, StackTrace? stackTrace}) =>
       _checkLevelAndPrint(LogLevel.DEBUG,
           tag: tag, msg: msg, err: err, stackTrace: stackTrace);
 
-  void i({String? tag, String? msg, dynamic err, StackTrace? stackTrace}) =>
+  void i({String? tag, Object? msg, dynamic err, StackTrace? stackTrace}) =>
       _checkLevelAndPrint(LogLevel.INFO,
           tag: tag, msg: msg, err: err, stackTrace: stackTrace);
 
-  void w({String? tag, String? msg, dynamic err, StackTrace? stackTrace}) =>
+  void w({String? tag, Object? msg, dynamic err, StackTrace? stackTrace}) =>
       _checkLevelAndPrint(LogLevel.WARN,
           tag: tag, msg: msg, err: err, stackTrace: stackTrace);
 
-  void e({String? tag, String? msg, dynamic err, StackTrace? stackTrace}) =>
+  void e({String? tag, Object? msg, dynamic err, StackTrace? stackTrace}) =>
       _checkLevelAndPrint(LogLevel.ERROR,
           tag: tag, msg: msg, err: err, stackTrace: stackTrace);
 
-  void wtf({String? tag, String? msg, dynamic err, StackTrace? stackTrace}) =>
+  void wtf({String? tag, Object? msg, dynamic err, StackTrace? stackTrace}) =>
       _checkLevelAndPrint(LogLevel.ASSERT,
           tag: tag, msg: msg, err: err, stackTrace: stackTrace);
 
   void _checkLevelAndPrint(LogLevel level,
-      {String? tag, String? msg, dynamic err, StackTrace? stackTrace}) {
+      {String? tag, Object? msg, dynamic err, StackTrace? stackTrace}) {
     if (level < _logLevel) return;
-    final event = LogEvent(level, tag ?? "ALogger",
-        msg: msg, err: err, stackTrace: stackTrace);
+    tag ??= 'AnLogger';
+    final event = LogEvent(level, tag,
+        msg: _convertMsg(msg), err: err, stackTrace: stackTrace, source: msg);
     if (event.isNotEmptyMessage) {
-      _printMsg(level, tag ?? "ALogger", event);
+      _printMsg(level, tag, event);
     }
   }
 
   void _printMsg(LogLevel level, String tag, LogEvent event) {
     _printers.values.forEach((e) => e.printEvent(level, tag, event));
+  }
+
+  static String? _convertMsg(Object? msg) {
+    if (msg == null) return null;
+    if (msg is String) return msg;
+    return LoggerConvert.instance.convert(msg);
   }
 }

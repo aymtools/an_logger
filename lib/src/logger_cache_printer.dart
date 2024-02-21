@@ -18,8 +18,8 @@ class LoggerCachePrinter extends LoggerPrinter {
   @override
   void printEvent(LogLevel level, String tag, LogEvent event) {
     if (_buffer.length == _bufferSize) {
-      _buffer.removeFirst();
+      _buffer.removeLast();
     }
-    _buffer.add(event);
+    _buffer.addFirst(event);
   }
 }
