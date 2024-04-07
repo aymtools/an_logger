@@ -82,13 +82,13 @@ class Logger {
 
   set logLevel(LogLevel level) => _logLevel = level;
 
-  void registerPrinter(LoggerPrinter printer) =>
+  void addPrinter(LoggerPrinter printer) =>
       _printers[printer.runtimeType] = printer;
 
-  void unregisterPrinter(LoggerPrinter printer) =>
-      _printers.removeWhere((_, p) => p == printer);
-
-  void unregisterPrinterForType<T>() => _printers.remove(T);
+  // void unregisterPrinter(LoggerPrinter printer) =>
+  //     _printers.removeWhere((_, p) => p == printer);
+  //
+  // void unregisterPrinterForType<T>() => _printers.remove(T);
 
   void v({String? tag, Object? msg, dynamic err, StackTrace? stackTrace}) =>
       _checkLevelAndPrint(LogLevel.VERBOSE,
@@ -117,9 +117,13 @@ class Logger {
   void _checkLevelAndPrint(LogLevel level,
       {String? tag, Object? msg, dynamic err, StackTrace? stackTrace}) {
     if (level < _logLevel) return;
+    if (_printers.isEmpty) return;
     tag ??= 'AnLogger';
     final event = LogEvent(level, tag,
-        msg: _convertMsg(msg), err: err, stackTrace: stackTrace, source: msg);
+        msg: msg is String ? msg : _convertMsg(msg),
+        err: err,
+        stackTrace: stackTrace,
+        source: msg);
     if (event.isNotEmptyMessage) {
       _printMsg(level, tag, event);
     }

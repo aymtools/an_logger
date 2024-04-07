@@ -39,19 +39,15 @@ class LoggerConvert extends LoggerConvertContext {
   final Set<LoggerConvertBase> converts = {};
 
   LoggerConvert._() {
-    this.registerConvert(LoggerConvertString());
-    this.registerConvert(LoggerConvertMap());
-    this.registerConvert(LoggerConvertList());
+    this.addConvert(LoggerConvertString());
+    this.addConvert(LoggerConvertMap());
+    this.addConvert(LoggerConvertList());
   }
 
   static final LoggerConvert instance = LoggerConvert._();
 
-  void registerConvert(LoggerConvertBase convert) {
+  void addConvert(LoggerConvertBase convert) {
     converts.add(convert);
-  }
-
-  void unregisterConvert(LoggerConvertBase convert) {
-    converts.remove(convert);
   }
 
   String convert(Object? obj) {

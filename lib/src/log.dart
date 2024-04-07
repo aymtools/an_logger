@@ -6,20 +6,11 @@ class Log {
 
   static set logLevel(LogLevel level) => Logger.logger.logLevel = level;
 
-  static void registerPrinter(LoggerPrinter printer) =>
-      Logger.logger.registerPrinter(printer);
+  static void addPrinter(LoggerPrinter printer) =>
+      Logger.logger.addPrinter(printer);
 
-  static void unregisterPrinter(LoggerPrinter printer) =>
-      Logger.logger.unregisterPrinter(printer);
-
-  static void unregisterPrinterForType<T>() =>
-      Logger.logger.unregisterPrinterForType<T>();
-
-  static void registerCustomConvert(LoggerConvertBase convert) =>
-      LoggerConvert.instance.registerConvert(convert);
-
-  static void unregisterCustomConvert(LoggerConvertBase convert) =>
-      LoggerConvert.instance.unregisterConvert(convert);
+  static void addCustomConvert(LoggerConvertBase convert) =>
+      LoggerConvert.instance.addConvert(convert);
 
   static void v(
           {String? tag, Object? msg, dynamic err, StackTrace? stackTrace}) =>
