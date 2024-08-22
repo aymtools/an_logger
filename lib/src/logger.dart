@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'logger_convert.dart';
 
 enum LogLevel {
@@ -28,7 +26,6 @@ class LogEvent {
   final dynamic err;
   final StackTrace? stackTrace;
   final DateTime time;
-  final Zone zone;
   final Object? source;
 
   LogEvent(
@@ -37,10 +34,8 @@ class LogEvent {
     this.msg,
     this.err,
     this.stackTrace,
-    Zone? zone,
     this.source,
-  })  : this.zone = zone ?? Zone.current,
-        this.time = DateTime.now();
+  }) : this.time = DateTime.now();
 
   bool get isNotEmptyMessage =>
       msg != null || err != null || stackTrace != null;
@@ -67,14 +62,18 @@ abstract class LoggerPrinter {
   void printEvent(LogLevel level, String tag, LogEvent event);
 }
 
+//不支持跨isolate使用
+@pragma('vm:isolate-unsendable')
 class Logger {
   Logger._();
 
-  static final Logger instance = Logger._();
+  static Logger _instance = Logger._();
 
-  static Logger get logger => instance;
+  static Logger get instance => _instance;
 
-  static Logger get log => instance;
+  static Logger get logger => _instance;
+
+  static Logger get log => _instance;
 
   final Map<Type, LoggerPrinter> _printers = {};
 
@@ -114,6 +113,11 @@ class Logger {
       _checkLevelAndPrint(LogLevel.ASSERT,
           tag: tag, msg: msg, err: err, stackTrace: stackTrace);
 
+  void print(LogLevel level,
+          {String? tag, Object? msg, dynamic err, StackTrace? stackTrace}) =>
+      _checkLevelAndPrint(level,
+          tag: tag, msg: msg, err: err, stackTrace: stackTrace);
+
   void _checkLevelAndPrint(LogLevel level,
       {String? tag, Object? msg, dynamic err, StackTrace? stackTrace}) {
     if (level < _logLevel) return;
@@ -138,4 +142,38 @@ class Logger {
     if (msg is String) return msg;
     return LoggerConvert.instance.convert(msg);
   }
+}
+
+//不支持跨isolate使用
+@pragma('vm:isolate-unsendable')
+class BackgroundIsolateLogger extends Logger {
+  BackgroundIsolateLogger._() : super._();
+
+  late void Function(LogLevel level, String tag, Object? msg, dynamic err,
+      StackTrace? stackTrace) _backgroundPrint;
+
+  static void init(
+      void Function(LogLevel level, String tag, Object? msg, dynamic err,
+              StackTrace? stackTrace)
+          backgroundPrint) {
+    assert(
+        Logger.instance.runtimeType == Logger, 'init can only be called once');
+    BackgroundIsolateLogger logger = BackgroundIsolateLogger._();
+    logger._backgroundPrint = backgroundPrint;
+    Logger._instance = logger;
+  }
+
+  @override
+  set logLevel(LogLevel level) {
+    throw UnsupportedError('Background isolates do not support logLevel(). ');
+  }
+
+  @override
+  void addPrinter(LoggerPrinter printer) {
+    throw UnsupportedError('Background isolates do not support addPrinter(). ');
+  }
+
+  @override
+  void _checkLevelAndPrint(LogLevel level,
+      {String? tag, Object? msg, dynamic err, StackTrace? stackTrace}) {}
 }
