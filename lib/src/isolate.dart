@@ -2,14 +2,14 @@ import 'dart:isolate';
 
 import 'package:an_logger/an_logger.dart';
 
+/// 定义一个允许跨Isolate的日志转发 token
 class RootIsolateLoggerToken {
   final SendPort _sendPort;
 
   RootIsolateLoggerToken._(this._sendPort);
 
-  static final RootIsolateLoggerToken instance = () {
-    return RootIsolateLoggerToken._(__getRootIsolateToken());
-  }();
+  static final RootIsolateLoggerToken instance =
+      RootIsolateLoggerToken._(__getRootIsolateToken());
 
   void Function(LogLevel, String, Object?, dynamic, StackTrace?)
       get backgroundPrint => (level, tag, msg, err, stackTrace) {
@@ -42,6 +42,7 @@ class RootIsolateLoggerToken {
 }
 
 extension BackgroundIsolateLoggerTokenExt on Logger {
+  /// 获取 root的token 只可以在 root isolate中使用
   RootIsolateLoggerToken get rootIsolateToken =>
       RootIsolateLoggerToken.instance;
 }

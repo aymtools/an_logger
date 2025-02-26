@@ -1,5 +1,6 @@
 import 'logger_convert.dart';
 
+/// 日志等级
 enum LogLevel {
   VERBOSE,
   DEBUG,
@@ -19,13 +20,27 @@ extension LogLevelExt on LogLevel {
   operator <=(LogLevel other) => this.index <= other.index;
 }
 
+/// 一个日志事件
 class LogEvent {
+  /// 等级
   final LogLevel level;
+
+  /// 标识
   final String tag;
+
+  /// 消息
   final String? msg;
+
+  /// 错误
   final dynamic err;
+
+  /// 错误栈
   final StackTrace? stackTrace;
+
+  ///  时间
   final DateTime time;
+
+  /// 自定义源 一般不参与日志的输出
   final Object? source;
 
   LogEvent(
@@ -37,9 +52,11 @@ class LogEvent {
     this.source,
   }) : this.time = DateTime.now();
 
+  /// 是否是空消息
   bool get isNotEmptyMessage =>
       msg != null || err != null || stackTrace != null;
 
+  ///  获取消息体内容
   String get messages {
     String msgInfo = '';
     if (msg != null && msg!.isNotEmpty) {
@@ -58,10 +75,12 @@ class LogEvent {
   }
 }
 
+/// 自定义一个日志打印
 abstract class LoggerPrinter {
   void printEvent(LogLevel level, String tag, LogEvent event);
 }
 
+/// 使用的对象
 //不支持跨isolate使用
 @pragma('vm:isolate-unsendable')
 class Logger {
@@ -69,18 +88,23 @@ class Logger {
 
   static Logger _instance = Logger._();
 
+  /// instance
   static Logger get instance => _instance;
 
+  /// logger
   static Logger get logger => _instance;
 
+  /// log
   static Logger get log => _instance;
 
   final Map<Type, LoggerPrinter> _printers = {};
 
   LogLevel _logLevel = LogLevel.ERROR;
 
+  ///  设置默认的拦截 level
   set logLevel(LogLevel level) => _logLevel = level;
 
+  /// 添加一个自定义的日志打印器
   void addPrinter(LoggerPrinter printer) =>
       _printers[printer.runtimeType] = printer;
 
@@ -175,5 +199,8 @@ class BackgroundIsolateLogger extends Logger {
 
   @override
   void _checkLevelAndPrint(LogLevel level,
-      {String? tag, Object? msg, dynamic err, StackTrace? stackTrace}) {}
+      {String? tag, Object? msg, dynamic err, StackTrace? stackTrace}) {
+    _backgroundPrint(
+        level, tag ?? 'BackgroundIsolateLogger', msg, err, stackTrace);
+  }
 }

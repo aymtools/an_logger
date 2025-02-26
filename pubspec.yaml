@@ -1,6 +1,6 @@
 name: an_logger
 description: A logging tool that can be customized to output to any location.
-version: 1.0.0
+version: 1.1.0
 homepage: https://github.com/aymtools/an_logger
 
 environment:
