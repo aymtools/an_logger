@@ -25,8 +25,9 @@ void main() {
   Isolate.spawn((RootIsolateLoggerToken token) {
     print('Isolate  create');
     // 在isolate通过token 初始化BackgroundIsolateLogger 后即可正常使用Log Logger
-    BackgroundIsolateLogger.init(token.backgroundPrint);
+    BackgroundIsolateLogger.init(token);
     Log.d(tag: 'IsolateLog', msg: 'form isolate message');
+    print('in isolate time ${DateTime.now()}');
     print('Isolate  will exit');
     Isolate.exit();
   }, token);
@@ -36,6 +37,7 @@ class MyPrinter extends LoggerPrinter {
   @override
   void printEvent(LogLevel level, String tag, LogEvent event) {
     ///Customize your output content, feel free to express yourself in any way.
-    print('$level $tag ${event.messages}');
+    print(
+        '$level $tag ${event.messages} ${event.time} printTime: ${DateTime.now()}');
   }
 }

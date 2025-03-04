@@ -50,7 +50,8 @@ class LogEvent {
     this.err,
     this.stackTrace,
     this.source,
-  }) : this.time = DateTime.now();
+    DateTime? time,
+  }) : this.time = time ?? DateTime.now();
 
   /// 是否是空消息
   bool get isNotEmptyMessage =>
@@ -138,12 +139,20 @@ class Logger {
           tag: tag, msg: msg, err: err, stackTrace: stackTrace);
 
   void print(LogLevel level,
-          {String? tag, Object? msg, dynamic err, StackTrace? stackTrace}) =>
+          {String? tag,
+          Object? msg,
+          dynamic err,
+          StackTrace? stackTrace,
+          DateTime? time}) =>
       _checkLevelAndPrint(level,
-          tag: tag, msg: msg, err: err, stackTrace: stackTrace);
+          tag: tag, msg: msg, err: err, stackTrace: stackTrace, time: time);
 
   void _checkLevelAndPrint(LogLevel level,
-      {String? tag, Object? msg, dynamic err, StackTrace? stackTrace}) {
+      {String? tag,
+      Object? msg,
+      dynamic err,
+      StackTrace? stackTrace,
+      DateTime? time}) {
     if (level < _logLevel) return;
     if (_printers.isEmpty) return;
     tag ??= 'AnLogger';
@@ -151,7 +160,8 @@ class Logger {
         msg: msg is String ? msg : _convertMsg(msg),
         err: err,
         stackTrace: stackTrace,
-        source: msg);
+        source: msg,
+        time: time);
     if (event.isNotEmptyMessage) {
       _printMsg(level, tag, event);
     }
@@ -168,22 +178,25 @@ class Logger {
   }
 }
 
+/// 定义通信token
+abstract class IsolateLoggerToken {
+  void backgroundPrint(LogLevel level, String tag, Object? msg, dynamic err,
+      StackTrace? stackTrace, DateTime time);
+}
+
 //不支持跨isolate使用
 @pragma('vm:isolate-unsendable')
 class BackgroundIsolateLogger extends Logger {
   BackgroundIsolateLogger._() : super._();
 
   late void Function(LogLevel level, String tag, Object? msg, dynamic err,
-      StackTrace? stackTrace) _backgroundPrint;
+      StackTrace? stackTrace, DateTime time) _backgroundPrint;
 
-  static void init(
-      void Function(LogLevel level, String tag, Object? msg, dynamic err,
-              StackTrace? stackTrace)
-          backgroundPrint) {
+  static void init(IsolateLoggerToken token) {
     assert(
         Logger.instance.runtimeType == Logger, 'init can only be called once');
     BackgroundIsolateLogger logger = BackgroundIsolateLogger._();
-    logger._backgroundPrint = backgroundPrint;
+    logger._backgroundPrint = token.backgroundPrint;
     Logger._instance = logger;
   }
 
@@ -199,8 +212,12 @@ class BackgroundIsolateLogger extends Logger {
 
   @override
   void _checkLevelAndPrint(LogLevel level,
-      {String? tag, Object? msg, dynamic err, StackTrace? stackTrace}) {
-    _backgroundPrint(
-        level, tag ?? 'BackgroundIsolateLogger', msg, err, stackTrace);
+      {String? tag,
+      Object? msg,
+      dynamic err,
+      StackTrace? stackTrace,
+      DateTime? time}) {
+    _backgroundPrint(level, tag ?? 'BackgroundIsolateLogger', msg, err,
+        stackTrace, time ?? DateTime.now());
   }
 }

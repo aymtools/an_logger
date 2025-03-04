@@ -15,6 +15,7 @@ class Log {
   /// 添加一个自定义的 对象转换器
   static void addCustomConvert(LoggerConvertBase convert) =>
       LoggerConvert.instance.addConvert(convert);
+
   /// v
   static void v(
           {String? tag, Object? msg, dynamic err, StackTrace? stackTrace}) =>

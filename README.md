@@ -26,7 +26,7 @@ void main() {
   Isolate.spawn((RootIsolateLoggerToken token) {
     print('Isolate  create');
     // 在isolate通过token 初始化BackgroundIsolateLogger 后即可正常使用Log Logger
-    BackgroundIsolateLogger.init(token.backgroundPrint);
+    BackgroundIsolateLogger.init(token);
     Log.d(tag: 'in Isolate', msg: 'form isolate message');
     print('Isolate  will exit');
     Isolate.exit();
