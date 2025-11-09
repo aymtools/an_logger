@@ -10,7 +10,7 @@ abstract class LoggerConvertContext {
 
 class LoggerConvertString extends LoggerConvertBase<String> {
   @override
-  String convert(String obj, LoggerConvertContext context) => '\"$obj\"';
+  String convert(String obj, LoggerConvertContext context) => '"$obj"';
 }
 
 class LoggerConvertList extends LoggerConvertBase<List> {
@@ -39,9 +39,9 @@ class LoggerConvert extends LoggerConvertContext {
   final Set<LoggerConvertBase> converts = {};
 
   LoggerConvert._() {
-    this.addConvert(LoggerConvertString());
-    this.addConvert(LoggerConvertMap());
-    this.addConvert(LoggerConvertList());
+    addConvert(LoggerConvertString());
+    addConvert(LoggerConvertMap());
+    addConvert(LoggerConvertList());
   }
 
   static final LoggerConvert instance = LoggerConvert._();
@@ -50,6 +50,7 @@ class LoggerConvert extends LoggerConvertContext {
     converts.add(convert);
   }
 
+  @override
   String convert(Object? obj) {
     //null需要特殊定义
     if (obj == null) return 'null';

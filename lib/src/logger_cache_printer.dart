@@ -12,8 +12,8 @@ class LoggerCachePrinter extends LoggerPrinter {
   List<LogEvent> get logEvents => logBuffer.toList();
 
   LoggerCachePrinter({int bufferSize = 500})
-      : this._bufferSize = bufferSize,
-        this._buffer = ListQueue(bufferSize);
+      : _bufferSize = bufferSize,
+        _buffer = ListQueue(bufferSize);
 
   @override
   void printEvent(LogLevel level, String tag, LogEvent event) {

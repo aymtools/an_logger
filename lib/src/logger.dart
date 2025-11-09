@@ -1,6 +1,8 @@
 import 'logger_convert.dart';
 
+// ignore_for_file: constant_identifier_names
 /// 日志等级
+///
 enum LogLevel {
   VERBOSE,
   DEBUG,
@@ -11,13 +13,13 @@ enum LogLevel {
 }
 
 extension LogLevelExt on LogLevel {
-  operator >(LogLevel other) => this.index > other.index;
+  bool operator >(LogLevel other) => index > other.index;
 
-  operator >=(LogLevel other) => this.index >= other.index;
+  bool operator >=(LogLevel other) => index >= other.index;
 
-  operator <(LogLevel other) => this.index < other.index;
+  bool operator <(LogLevel other) => index < other.index;
 
-  operator <=(LogLevel other) => this.index <= other.index;
+  bool operator <=(LogLevel other) => index <= other.index;
 }
 
 /// 一个日志事件
@@ -51,7 +53,7 @@ class LogEvent {
     this.stackTrace,
     this.source,
     DateTime? time,
-  }) : this.time = time ?? DateTime.now();
+  }) : time = time ?? DateTime.now();
 
   /// 是否是空消息
   bool get isNotEmptyMessage =>
@@ -168,7 +170,9 @@ class Logger {
   }
 
   void _printMsg(LogLevel level, String tag, LogEvent event) {
-    _printers.values.forEach((e) => e.printEvent(level, tag, event));
+    for (var e in _printers.values) {
+      e.printEvent(level, tag, event);
+    }
   }
 
   static String? _convertMsg(Object? msg) {

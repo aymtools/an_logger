@@ -1,3 +1,7 @@
+## 1.3.0
+
+* Re-added compatibility with the web platform.
+
 ## 1.2.0
 
 * Optimize the init method of BackgroundIsolateLogger.
