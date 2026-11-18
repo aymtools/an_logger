@@ -1,3 +1,7 @@
+## 1.3.1
+
+* Upgraded minimum SDK version constraint.
+
 ## 1.3.0
 
 * Re-added compatibility with the web platform.
@@ -9,7 +13,7 @@
 
 ### Breaking Changes
 
-* BackgroundIsolateLogger.init(IsolateLoggerToken)
+* BackgroundIsolateLogger.init (IsolateLoggerToken)
 
 ## 1.1.0
 
